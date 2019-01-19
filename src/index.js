@@ -1,5 +1,5 @@
 const { Client  } = require('discord.js')
-const tokens = require('./tokens.json')
+const config = require('./config.json')
 const client = new Client()
 const yt = require('ytdl-core');
 
@@ -13,7 +13,7 @@ const commands = {
   'play': (msg) => {
     return commands.join(msg)
       .then(connection => {
-        url = msg.content.slice(tokens.prefix.length).split(' ')[2]
+        url = msg.content.slice(config.prefix.length).split(' ')[2]
         dispatcher = connection.playStream(yt(url))
 
         dispatcher.on('end', () => {
@@ -32,12 +32,12 @@ const commands = {
 
 const mediaControlls = (collector, dispatcher) => {
   collector.on('collect', m => {
-    if(m.content.startsWith(`${tokens.prefix} pause`)) {
+    if(m.content.startsWith(`${config.prefix} pause`)) {
       dispatcher.pause()
-    } else if(m.content.startsWith(`${tokens.prefix} resume`)) {
+    } else if(m.content.startsWith(`${config.prefix} resume`)) {
       console.log("resuming")
       dispatcher.resume()
-    } else if(m.content.startsWith(`${tokens.prefix} stop`)) {
+    } else if(m.content.startsWith(`${config.prefix} stop`)) {
       dispatcher.end()
     } 
   })
@@ -48,15 +48,15 @@ client.on('ready', () => {
 })
 
 client.on('message', msg => {
-  if (!msg.content.startsWith(tokens.prefix)) {
+  if (!msg.content.startsWith(config.prefix)) {
     return
   }
 
-  reqCommand = msg.content.toLowerCase().slice(tokens.prefix.length).split(' ')[1]
+  reqCommand = msg.content.toLowerCase().slice(config.prefix.length).split(' ')[1]
 
   if(commands.hasOwnProperty(reqCommand)) {
     commands[reqCommand](msg)
   }
 })
 
-client.login(tokens.d_token)
+client.login(config.d_token)

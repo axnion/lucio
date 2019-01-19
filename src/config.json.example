@@ -1,0 +1,6 @@
+{
+  "d_token" : "<discord_bot_api_token>",
+	"adminID" : "<admin_id>",
+  "prefix" : "lucio",
+	"passes" : 1
+}

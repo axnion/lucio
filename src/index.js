@@ -3,9 +3,21 @@ const config = require('./config.json')
 const client = new Client()
 const yt = require('ytdl-core');
 
+/*
+ * TODO
+ * Add loop feature
+ * Add logging for events
+ * Add message feedback on events
+ * Improve errorhandling
+ */
+
 const commands = {
   'join': (msg) => {
     return msg.member.voiceChannel.join()
+      .then(connection => {
+        play(connection, "https://www.youtube.com/watch?v=yr7h_CTHc1k")
+        return connection
+      })
   },
   'leave': (msg) => {
     return msg.member.voiceChannel.leave()
@@ -14,20 +26,26 @@ const commands = {
     return commands.join(msg)
       .then(connection => {
         url = msg.content.slice(config.prefix.length).split(' ')[2]
-        dispatcher = connection.playStream(yt(url))
-
-        dispatcher.on('end', () => {
-          console.log("Ended")
-        })
-
-        dispatcher.on('error', err => {
-          console.log(err)
-        })
+        const dispatcher = play(connection, url)
 
         // Add additional media controlls
         mediaControlls(msg.channel.createCollector(m => m), dispatcher)
       })
   }
+}
+
+const play = (connection, url) => {
+  const dispatcher = connection.playStream(yt(url))
+
+  dispatcher.on('end', () => {
+    console.log("Ended")
+  })
+
+  dispatcher.on('error', err => {
+    console.log(err)
+  })
+
+  return dispatcher
 }
 
 const mediaControlls = (collector, dispatcher) => {
@@ -49,6 +67,11 @@ client.on('ready', () => {
 
 client.on('message', msg => {
   if (!msg.content.startsWith(config.prefix)) {
+    return
+  }
+
+  if (!msg.member.hasPermission("ADMINISTRATOR")) {
+    msg.channel.send(`Sorry ${msg.member.user.username}, but you are not cool enough to use this feature.`)
     return
   }
 

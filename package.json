@@ -1,0 +1,30 @@
+{
+  "name": "lucio",
+  "version": "0.0.1",
+  "description": "A simple discord music bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axnion/lucio.git"
+  },
+  "keywords": [
+    "discord",
+    "lucio",
+    "bot"
+  ],
+  "author": "Axel Nilsson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/axnion/lucio/issues"
+  },
+  "homepage": "https://github.com/axnion/lucio#readme",
+  "dependencies": {
+    "discord.js": "^11.4.2",
+    "opusscript": "0.0.6",
+    "ytdl-core": "0.29.0"
+  }
+}

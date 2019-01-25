@@ -37,7 +37,7 @@ const commands = {
 }
 
 const play = (connection, msg, url) => {
-  const dispatcher = connection.playStream(yt(url,{filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1048576 }), {highWaterMark: 1})
+  const dispatcher = connection.playStream(yt(url,{quality: 'highestaudio', highWaterMark: 1048576 }), {highWaterMark: 1})
 
   dispatcher.on('error', err => {
     console.log(err)

@@ -15,7 +15,7 @@ const commands = {
   'join': (msg) => {
     return msg.member.voiceChannel.join()
       .then(connection => {
-        play(connection, "https://www.youtube.com/watch?v=yr7h_CTHc1k")
+        play(connection, msg, "https://www.youtube.com/watch?v=yr7h_CTHc1k")
         return connection
       })
   },
@@ -25,27 +25,46 @@ const commands = {
   'play': (msg) => {
     return commands.join(msg)
       .then(connection => {
-        url = msg.content.slice(config.prefix.length).split(' ')[2]
-        const dispatcher = play(connection, url)
-
-        // Add additional media controlls
-        mediaControlls(msg.channel.createCollector(m => m), dispatcher)
+        play(connection, msg, msg.content.slice(config.prefix.length).split(' ')[2])
+      })
+  },
+  'loop': (msg) => {
+    return commands.join(msg)
+      .then(connection => {
+        loop(connection, msg, msg.content.slice(config.prefix.length).split(' ')[2])
       })
   }
 }
 
-const play = (connection, url) => {
-  const dispatcher = connection.playStream(yt(url))
-
-  dispatcher.on('end', () => {
-    console.log("Ended")
-  })
+const play = (connection, msg, url) => {
+  const dispatcher = queue.connection.playStream(yt(url,{filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25 }), {highWaterMark: 1})
 
   dispatcher.on('error', err => {
     console.log(err)
   })
 
-  return dispatcher
+  dispatcher.on('end', () => {
+    console.log("Looping...")
+  })
+
+  // Add additional media controlls
+  mediaControlls(msg.channel.createCollector(m => m), dispatcher)
+}
+
+const loop = (connection, msg, url) => {
+  const dispatcher = connection.playStream(yt(url))
+
+  dispatcher.on('error', err => {
+    console.log(err)
+  })
+
+  dispatcher.on('end', () => {
+    loop(connection, msg, url)
+    console.log("Looping...")
+  })
+
+  // Add additional media controlls
+  mediaControlls(msg.channel.createCollector(m => m), dispatcher)
 }
 
 const mediaControlls = (collector, dispatcher) => {
@@ -70,7 +89,7 @@ client.on('message', msg => {
     return
   }
 
-  if (!msg.member.hasPermission("ADMINISTRATOR")) {
+  if (!msg.member.hasPermission("ADMINISTRATOR") && config.adminOnly) {
     msg.channel.send(`Sorry ${msg.member.user.username}, but you are not cool enough to use this feature.`)
     return
   }

@@ -1,0 +1,14 @@
+[Unit]
+Description=Discord bot for playing audio streams from YouTube
+After=network.target
+
+[Service]
+Type=simple
+User=nanodano
+WorkingDirectory=/home/nanodano
+ExecStart=/home/nanodano/my_daemon --option=123
+Restart=on-failure
+# Other Restart options: or always, on-abort, etc
+
+[Install]
+WantedBy=multi-user.target

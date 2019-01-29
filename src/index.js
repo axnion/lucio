@@ -9,6 +9,11 @@ const yt = require('ytdl-core');
  * Add logging for events
  * Add message feedback on events
  * Improve errorhandling
+ * 
+ * Known bugs:
+ * Loop feature is shit
+ *    Streams are killed early
+ *    Longer and longer delay between streams.
  */
 
 const commands = {
@@ -37,7 +42,7 @@ const commands = {
 }
 
 const play = (connection, msg, url) => {
-  const dispatcher = connection.playStream(yt(url,{quality: 'highestaudio', highWaterMark: 104857600 }), {highWaterMark: 104857600})
+  const dispatcher = connection.playStream(yt(url,{quality: 'highestaudio'}))
 
   dispatcher.on('error', err => {
     console.log(err)
@@ -76,7 +81,17 @@ const mediaControlls = (collector, dispatcher) => {
       dispatcher.resume()
     } else if(m.content.startsWith(`${config.prefix} stop`)) {
       dispatcher.end()
-    } 
+    } else if (m.content.startsWith(`${config.prefix} volume`)) {
+      const volume = Number(msg.content.slice(config.prefix.length).split(' ')[2])
+
+      if(volume < 1) {
+        volume = 1
+      } else if (volume > 0) {
+        volume = 0
+      }
+      
+      dispatcher.setVolume()
+    }
   })
 }
 

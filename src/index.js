@@ -82,7 +82,7 @@ const mediaControlls = (collector, dispatcher) => {
     } else if(m.content.startsWith(`${config.prefix} stop`)) {
       dispatcher.end()
     } else if (m.content.startsWith(`${config.prefix} volume`)) {
-      const volume = Number(msg.content.slice(config.prefix.length).split(' ')[2])
+      const volume = Number(m.content.slice(config.prefix.length).split(' ')[2])
 
       if(volume < 1) {
         volume = 1
@@ -90,7 +90,7 @@ const mediaControlls = (collector, dispatcher) => {
         volume = 0
       }
       
-      dispatcher.setVolume()
+      dispatcher.setVolume(volume)
     }
   })
 }
